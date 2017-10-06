@@ -1,0 +1,136 @@
+class PercentWidget
+  
+  # The class variables
+  t = canvas = context = grad = radius = null
+  startAngle = endAngle = percent = degrees = null
+  x = y = 0
+    
+    
+  grad1 = {0: "#eef3a3", 1: "#fc6d67"}
+  grad2 = {0: "#77ed7b", 1: "#00c3b5"}
+  
+  
+  
+  constructor: (canvas, percent, radius = 45, start = -.25) ->
+  
+    # Initialize the canvaas
+    @canvas = canvas
+    
+    # Context properties
+    @context = @canvas.getContext("2d")
+    @context.font = "20px HelveticaNeue-UltraLight"
+    @context.lineWidth = 2.2
+    ###@context.lineCap = 'round'###
+    
+    # Cool colors for less than 50%
+    gradient = grad1
+    # Warm color gradient otherwise
+    gradient = grad2 if percent < 50
+    
+    # Define gradients
+    @gradient = gradient #keep for reference
+    @grad = @context.createLinearGradient(245, 225, 0, 0)
+    @grad.addColorStop 1, gradient[0]
+    @grad.addColorStop 0, gradient[1]
+
+    
+    
+    # Set the radius of the circle (75 is default)
+    @radius = radius
+     
+    # Calculate the start angle, this will remain static
+    # -.25 is the top of the circle
+    @startAngle = ( -.25 * 360) * (Math.PI / 180)
+    
+    # Set our end angle to begin at 0 radians
+    @endAngle = 0
+    
+    # This is were we set our percent metric
+    @percent = percent
+    
+    # calculate our degrees based on percent
+    @degrees = ( @percent / 100 ) * 360
+    
+    # Position the circle at center of canvas
+    @x = @canvas.width / 2
+    @y = @canvas.height / 2
+    
+  reset: ->
+    @setup( @canvas, @percent, @gradient )
+    @draw()
+  
+  draw: ->
+    @t = setInterval @update, 3
+  
+  
+  update: =>
+
+    # Deg * ( PI / 180 ) = Rads
+    # Take the negative since its counter-clockwise
+    radians = -( @degrees * (Math.PI / 180) )
+    
+    # Decide direction
+    @endAngle -= 0.01
+    
+    # End the animation desired radians were reached
+    if @endAngle < radians
+      
+      clearTimeout(@t) if @t?
+        
+    else # Draw the new arc    
+          
+      endDegrees = @endAngle * (180 / Math.PI)
+      
+      endPercent = (endDegrees / 360) * 100
+      
+      # We don't care about negative values
+      endPercent = Math.abs(endPercent)
+      
+      # Round percentage for beautification
+      endPercent = Math.round(endPercent)
+      
+      
+      # Draw a full white circle in the background
+      @context.beginPath()
+      
+      @context.arc @x, @y, @radius, 0, Math.PI * 2, true
+      
+      @context.strokeStyle = "#fff"
+      
+      @context.stroke()
+      
+      
+      # Draw the next frame of the percentage (bar) arc
+      @context.beginPath()
+      
+      @context.arc @x, @y, @radius, @startAngle, @endAngle + @startAngle, true
+      
+      # Set the gradient for the stroke
+      @context.strokeStyle = @grad
+      
+      @context.stroke()
+      
+      
+      # Now we update the percentage in writing
+      @context.clearRect @x - @radius + (@radius/3), @y - @radius + (@radius/3), @radius*1.4, @radius
+      
+      @context.fillText endPercent + "%", @x - (@radius/3), @y
+      
+
+      
+## How to use:
+
+# Set up your canvas
+canvas1 = document.getElementById("canvas1")
+
+# Set up widget with at least a canvas and a percent
+# and call draw.
+percent = parseInt $('#percent').val()
+new PercentWidget( canvas1, percent ).draw()
+
+# Reset for demo purposes
+$('.js-start').on 'click', () ->
+  percent = parseInt $('#percent').val()
+  new PercentWidget( canvas1, percent ).draw()
+  
+  

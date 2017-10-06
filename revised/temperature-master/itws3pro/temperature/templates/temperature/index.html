@@ -1,0 +1,404 @@
+<!DOCTYPE html>
+{% load static %}
+ <html lang="en">
+  <head>
+	<meta http-equiv="refresh" content="10" />
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <!-- Meta, title, CSS, favicons, etc. -->
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <title>Our Project </title>
+      
+    <!-- Bootstrap -->
+    <link href="{% static 'vendors/bootstrap/dist/css/bootstrap.min.css' %}" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link href="{% static 'vendors/font-awesome/css/font-awesome.min.css' %}" rel="stylesheet">
+    <!-- NProgress -->
+     <link href="{% static 'vendors/bootstrap-progressbar/css/bootstrap-progressbar-3.3.4.min.css' %}" rel="stylesheet">
+    <!-- Custom Theme Style -->
+    <link href="{% static 'build/css/custom.min.css' %}" rel="stylesheet">
+<script>
+		var a = parseInt({{te}});
+		var b = "{{hum}}";
+		var c = "{{sm}}";
+		var d = "{{lvl}}";
+window.onload = function () {
+
+var chart = new CanvasJS.Chart("chartContainer", {
+	exportEnabled: true,
+	animationEnabled: true,
+	title:{
+		text: "Plant Statistics"
+	},
+	height:600,
+	legend:{
+		cursor: "pointer",
+		itemclick: explodePie
+	},
+	data: [{
+		type: "pie",
+		showInLegend: true,
+		toolTipContent: "{name}: <strong>{y}%</strong>",
+		indexLabel: "{name} - {y}%",
+		
+		dataPoints: [
+
+			{ y: parseInt({{t}}), name:"temperature"},
+			{ y: parseInt({{h}}), name: "Humidity" },
+		
+			{ y: parseInt({{sm}}), name: "Soil Moisture" },
+			
+			{ y: parseInt({{lvl}}), name: "Water Level "}
+		]
+	}]
+});
+chart.render();
+}
+
+function explodePie (e) {
+	if(typeof (e.dataSeries.dataPoints[e.dataPointIndex].exploded) === "undefined" || !e.dataSeries.dataPoints[e.dataPointIndex].exploded) {
+		e.dataSeries.dataPoints[e.dataPointIndex].exploded = true;
+	} else {
+		e.dataSeries.dataPoints[e.dataPointIndex].exploded = false;
+	}
+	e.chart.render();
+
+}
+</script>
+<!--<script>
+window.onload = function() {
+
+var chart = new CanvasJS.Chart("chartContainer", {       
+	animationEnabled: true,
+	title: {
+		text: "Try Dragging Any Column to Resize"
+	},
+	axisX:{
+		minimum: 5,
+		maximum: 45
+	},
+	data: [{
+		type: "column",
+		dataPoints: [
+			{ x: 15, y: 71 },
+			{ x: 25, y: 55 },
+			{ x: 35, y: 50 },
+			{ x: 45, y:51},
+						
+		]
+	}]
+});
+chart.render();
+
+var xSnapDistance = chart.axisX[0].convertPixelToValue(chart.get("dataPointWidth")) / 2;
+var ySnapDistance = 3;
+
+var xValue, yValue;
+
+var mouseDown = false;
+var selected = null;
+var changeCursor = false;
+
+var timerId = null;
+
+function getPosition(e) {
+	var parentOffset = $("#chartContainer > .canvasjs-chart-container").offset();          	
+	var relX = e.pageX - parentOffset.left;
+	var relY = e.pageY - parentOffset.top;
+	xValue = Math.round(chart.axisX[0].convertPixelToValue(relX));
+	yValue = Math.round(chart.axisY[0].convertPixelToValue(relY));
+}
+
+function searchDataPoint() {
+	var dps = chart.data[0].dataPoints;
+	for(var i = 0; i < dps.length; i++ ) {
+		if( (xValue >= dps[i].x - xSnapDistance && xValue <= dps[i].x + xSnapDistance) && (yValue >= dps[i].y - ySnapDistance && yValue <= dps[i].y + ySnapDistance) ) 
+		{
+			if(mouseDown) {
+				selected = i;
+				break;
+			} else {
+				changeCursor = true;
+				break; 
+			}
+		} else {
+			selected = null;
+			changeCursor = false;
+		}
+	}
+}
+
+jQuery("#chartContainer > .canvasjs-chart-container").on({
+	mousedown: function(e) {
+		mouseDown = true;
+		getPosition(e);  
+		searchDataPoint();
+	},
+	mousemove: function(e) {
+		getPosition(e);
+		if(mouseDown) {
+			clearTimeout(timerId);
+			timerId = setTimeout(function(){
+				if(selected != null) {
+					chart.data[0].dataPoints[selected].y = yValue;
+					chart.render();
+				}   
+			}, 0);
+		}
+		else {
+			searchDataPoint();
+			if(changeCursor) {
+				chart.data[0].set("cursor", "n-resize");
+			} else {
+				chart.data[0].set("cursor", "default");
+			}
+		}
+	},
+	mouseup: function(e) {
+		if(selected != null) {
+			chart.data[0].dataPoints[selected].y = yValue;
+			chart.render();
+			mouseDown = false;
+		}
+	}
+});
+
+}
+</script>
+-->
+  </head>
+     
+  <body class="nav-md">
+    
+
+    
+    <div class="container body">
+      <div class="main_container">
+        <div class="col-md-3 left_col">
+          <div class="left_col scroll-view">
+            <div class="navbar nav_title" style="border: 0;">
+              <a href="{% url 'index'%}" class="site_title"><i class="fa fa-paw"></i> <span>DASHBOARD !</span></a>
+            </div>
+
+            <div class="clearfix"></div>
+
+            <!-- menu profile quick info -->
+            <div class="profile clearfix">
+             
+              <div class="profile_info">
+                <span><b>Welcome,</b></span>
+                <h2>User</h2>
+              </div>
+            </div>
+            <!-- /menu profile quick info -->
+
+            <br />
+
+            <!-- sidebar menu -->
+            <div id="sidebar-menu" class="main_menu_side hidden-print main_menu">
+              <div class="menu_section">
+                <h3>General</h3>
+                <ul class="nav side-menu">
+                  <li><a><i class="fa fa-home"></i> Home <span class="fa fa-chevron-down"></span></a>
+                    <ul class="nav child_menu">
+                      <li><a href="{% url '1.html' %}">Temperature and Humidity</a></li>
+                      <li><a href="#">Soil Moisture</a></li>
+		                          
+                    </ul>
+                     
+                  </li>
+                
+                 
+                </ul>
+				<ul class="nav side-menu">
+                  <li>
+                    <ul class="nav child_menu">
+                      
+                     
+                    </ul>
+                  </li>
+                
+                 
+                </ul>
+              </div>
+              <div class="menu_section">
+                             
+              </div>
+
+            </div>
+            <!-- /sidebar menu -->
+
+            <!-- /menu footer buttons -->
+            <div class="sidebar-footer hidden-small">
+              <a data-toggle="tooltip" data-placement="top" title="Settings">
+                <span class="glyphicon glyphicon-cog" aria-hidden="true"></span>
+              </a>
+              <a data-toggle="tooltip" data-placement="top" title="FullScreen">
+                <span class="glyphicon glyphicon-fullscreen" aria-hidden="true"></span>
+              </a>
+              <a data-toggle="tooltip" data-placement="top" title="Lock">
+                <span class="glyphicon glyphicon-eye-close" aria-hidden="true"></span>
+              </a>
+              <a data-toggle="tooltip" data-placement="top" title="Logout" href="login.html">
+                <span class="glyphicon glyphicon-off" aria-hidden="true"></span>
+              </a>
+            </div>
+            <!-- /menu footer buttons -->
+          </div>
+        </div>
+
+        <!--top navigation -->
+        <div class="top_nav">
+          <div class="nav_menu">
+            <nav>
+              <div class="nav toggle">
+                <a id="menu_toggle"><i class="fa fa-bars"></i></a>
+              </div>
+
+              <ul class="nav navbar-nav navbar-right">
+                <li class="">
+                  <a href="javascript:;" class="user-profile ">
+                    <img src="{% static '/production/images/img.jpg' %}" alt="">Plant Monitoring System
+                    
+                  </a>
+                 
+                </li>
+
+                  </ul>
+            </nav>
+          </div>
+        </div>
+        <!-- /top navigation -->
+
+        <!-- page content -->
+        <div class="right_col" role="main">
+          <!-- top tiles -->
+          <div class="row tile_count">
+           
+            <div class="col-md-2 col-sm-4 col-xs-6 tile_stats_count">
+              <span class="count_top"><i class="fa fa-clock-o"></i>Temperature</span>
+              <div class="count">{{t}}</div>
+              <span class="count_bottom"><i class="fa fa-sort-asc"></i>Updated</span>
+            </div>
+            <div class="col-md-2 col-sm-4 col-xs-6 tile_stats_count">
+              <span class="count_top"><i class="fa fa-clock-o"></i> Humidity</span>
+              <div class="count ">{{h}}</div>
+              <span class="count_bottom"><i class="fa fa-sort-asc"></i>Updated</span>
+            </div>
+             <div class="col-md-2 col-sm-4 col-xs-6 tile_stats_count">
+              <span class="count_top"><i class="fa fa-clock-o"></i> Soil Moisture</span>
+              <div class="count ">{{sm}}</div>
+              <span class="count_bottom"><i class="fa fa-sort-asc"></i>Updated</span>
+            </div>
+             <div class="col-md-2 col-sm-4 col-xs-6 tile_stats_count">
+              <span class="count_top"><i class="fa fa-clock-o"></i> Water Level</span>
+              <div class="count ">{{lvl}}</div>
+              <span class="count_bottom"><i class="fa fa-sort-asc"></i>Updated</span>
+            </div>
+          </div>
+          <!-- /top tiles -->
+
+          <div class="row">
+            <div class="col-md-12 col-sm-12 col-xs-12">
+              <div class="dashboard_graph">
+
+                <div class="row x_title">
+                  <div class="col-md-6">
+                    <h3>&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&nbsp;Graphs</h3>
+
+					
+                  </div>
+                  <div class="col-md-6">
+				  
+                 
+                    </div>
+                  </div>
+
+ 
+
+<div class='container'>
+  <div class='wrapper'>
+ 
+ <!--<td><div id="chartContainer" style="height: 300px; width: 350px;"></div></td>
+<script src="{% static '/production/js/51.js' %}"> </script> 
+ <script src="{% static '/production/js/52.js' %}"> </script> -->
+<div id="chartContainer" style="height: 370px; width: 100%;"></div>
+ <script src="{% static '/production/js/2.js' %}"> </script>
+ 
+
+
+
+
+  </div>
+</div>
+
+<div width='300'>
+<div class='container'>
+  
+  <script src="{% static '/production/js/1.js' %}"> </script> 
+
+   
+
+
+</div></div></td><td spanning="5000">
+<div class='container'>
+  <div class='wrapper'>
+  
+  </div>
+</div><div width='300'>
+<div class='container'>
+  
+
+
+  <script src="{% static '/production/js/3.js' %}"> </script> 
+
+  </div></div>
+
+
+
+                <div class="col-md-9 col-sm-9 col-xs-12">
+                  <div id="chart_plot_01" class="demo-placeholder"></div>
+                </div>
+                <div class="col-md-3 col-sm-3 col-xs-12 bg-white">
+                  <div class="x_title">
+                 </div>
+                  </div>
+
+                </div>
+
+                <div class="clearfix"></div>
+              </div>
+            </div>
+
+          </div>
+          <br />
+
+          <div class="row">
+
+
+            
+        <!-- footer content -->
+        <footer>
+          <div class="pull-right">
+            <!--Gentelella - Bootstrap Admin Template by <a href="https://colorlib.com">Colorlib</a>-->
+          </div>
+          <div class="clearfix"></div>
+        </footer>
+        <!-- /footer content -->
+      </div>
+    </div>
+
+    <!-- jQuery -->
+    <script src="{%static '/vendors/jquery/dist/jquery.min.js' %}"> </script>
+    <!-- Bootstrap -->
+    <script src="{% static '/vendors/bootstrap/dist/js/bootstrap.min.js' %}"></script>
+    <!-- FastClick -->
+       <!-- bootstrap-progressbar -->
+    <script src="{% static '/vendors/bootstrap-progressbar/bootstrap-progressbar.min.js' %}"></script>
+    <!-- iCheck -->
+    <!-- Custom Theme Scripts -->
+    <script src="{% static '/build/js/custom.min.js' %}"></script>
+    </div>></body>
+</html>
